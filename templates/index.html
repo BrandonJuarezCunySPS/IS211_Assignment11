@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        /* Simple styling to make things look nicer */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+
+    <!-- Display error or success messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <table>
+        <tr>
+            <th>Task</th>
+            <th>Email</th>
+            <th>Priority</th>
+            <th>Action</th>
+        </tr>
+        {% for item in todo_items %}
+        <tr>
+            <td>{{ item['task'] }}</td>
+            <td>{{ item['email'] }}</td>
+            <td>{{ item['priority'] }}</td>
+            <td>
+                <form action="{{ url_for('delete_item', index=loop.index0) }}" method="POST">
+                    <input type="submit" value="Delete">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Form to add a new To-Do item -->
+    <form action="{{ url_for('submit') }}" method="POST">
+        <label for="task">Task:</label>
+        <input type="text" name="task" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" required><br><br>
+
+        <label for="priority">Priority:</label>
+        <select name="priority" required>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select><br><br>
+
+        <input type="submit" value="Add To Do Item">
+    </form>
+
+    <!-- Form to clear the list -->
+    <form action="{{ url_for('clear') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear the list?');">
+        <input type="submit" value="Clear List">
+    </form>
+</body>
+</html>
